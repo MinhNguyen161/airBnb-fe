@@ -1,14 +1,33 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
-import ExperiencesList from './components/ExperiencesList';
+import React, { useEffect } from "react";
+import "./App.css";
+import { BrowserRouter as Router } from "react-router-dom";
+import Routes from "./routes";
+import { useDispatch, useSelector } from "react-redux";
+import { authActions } from "./redux/actions/authActions";
 
 function App() {
-  return (
-    <div className="App">
-      <ExperiencesList />
+  const dispatch = useDispatch();
+  const isAuthorized = useSelector((state) => state.auth.isAuthorized);
+  useEffect(() => {
+    const accessToken = localStorage.getItem("accessToken");
+    if (accessToken && accessToken !== "undefined") {
+      dispatch(authActions.getCurrentUser(accessToken));
+    }
+    // else {
+    //   dispatch(authActions.logout());
+    // }
+  }, [dispatch]);
 
-    </div>
+  return (
+    <>
+      {isAuthorized === null ? (
+        <div>loading</div>
+      ) : (
+        <Router>
+          <Routes />
+        </Router>
+      )}
+    </>
   );
 }
 
